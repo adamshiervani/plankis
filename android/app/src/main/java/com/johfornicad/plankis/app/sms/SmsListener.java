@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.telephony.SmsMessage;
 import android.util.Log;
 import android.widget.Toast;
@@ -38,15 +39,17 @@ public class SmsListener extends BroadcastReceiver {
 
                         //Check if it's a validation or Ticket
                         String msgBody = msgs[i].getMessageBody();
-                        if (isValidation(msgBody)) {
+                        if (isValidation(msgBody, msg_from)) {
                             //Send validation to backend
                             sendValidationToBackend(msgBody, msg_from);
+                            Toast.makeText(this.mContext, "Incoming validation", Toast.LENGTH_SHORT).show();
+
                         }
-                        if (isTicket(msgBody)) {
+                        if (isTicket(msgBody, msg_from)) {
                             //Send ticket to backend
                             sendTicketToBackend(msgBody, msg_from);
+                            Toast.makeText(this.mContext, "Incoming ticket", Toast.LENGTH_SHORT).show();
                         }
-
 
                     }
                 } catch (Exception e) {
@@ -63,6 +66,7 @@ public class SmsListener extends BroadcastReceiver {
 
 
         JsonObject json = new JsonObject();
+
         // Validation
         json.addProperty("msgTicket", msgBody);
         json.addProperty("msgFrom", msg_from);
@@ -71,7 +75,7 @@ public class SmsListener extends BroadcastReceiver {
         String UUID = prefs.getString("UUID", "");
         json.addProperty("uuid", UUID);
 
-        Ion.with(mContext, "http://192.168.56.1:3000/ticket")
+        Ion.with(mContext, MainActivity.BASE_URL + "/ticket")
                 .setJsonObjectBody(json)
                 .asJsonObject()
                 .setCallback(new FutureCallback<JsonObject>() {
@@ -97,7 +101,7 @@ public class SmsListener extends BroadcastReceiver {
         //Get the device previously generated UUID
         json.addProperty("uuid", prefs.getString("UUID", ""));
 
-        Ion.with(mContext, "http://192.168.56.1:3000/ticket/validation")
+        Ion.with(mContext, MainActivity.BASE_URL + "    /ticket/validation")
                 .setJsonObjectBody(json)
                 .asJsonObject()
                 .setCallback(new FutureCallback<JsonObject>() {
@@ -110,16 +114,17 @@ public class SmsListener extends BroadcastReceiver {
                 });
     }
 
-    private boolean isTicket(String msg) {
-        //TODO: Implement way to compare with THAT specific cities validation ticket
-        return msg.contains("Ticket");
-
+    private boolean isTicket(String msg, String msg_from) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this.mContext);
+        return msg_from.contains(prefs.getString("ticketfrom", "")) && msg.contains(prefs.getString("ticketpattern", ""));
     }
 
 
-    public boolean isValidation(String msgBody) {
-        //TODO: Implement way to compare with THAT specific cities validation ticket
-        return msgBody.contains("Validation");
+    public boolean isValidation(String msg, String msg_from) {
+//        TODO: Figure out validation messages in cities
+//        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this.mContext);
+//        return msg_from.contains(prefs.getString("ticketfrom", "")) && msg.contains(prefs.getString("ticketpattern", ""));
+        return msg.contains("validation");
     }
 
 

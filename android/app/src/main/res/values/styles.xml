@@ -2,6 +2,7 @@
 <resources>
 
     <!-- Base application theme. -->
+    <!--<style name="AppTheme" parent="android:Theme.Holo.Light.DarkActionBar">-->
     <style name="AppTheme" parent="android:Theme.Holo.Light.DarkActionBar">
         <!-- Customize your theme here. -->
         <item name="android:actionBarStyle">@style/CustomActionBar</item>
@@ -9,7 +10,14 @@
 
     <!-- ActionBar styles -->
     <style name="CustomActionBar" parent="@android:style/Widget.Holo.Light.ActionBar.Solid.Inverse">
-        <item name="android:background">#F2842C</item>
+        <item name="android:background">@color/main_color</item>
+        <item name="android:icon">@android:color/transparent</item>
+        <item name="android:titleTextStyle">@style/Theme.YourTheme.Styled.ActionBar.TitleTextStyle</item>
+    </style>
+
+    <style name="Theme.YourTheme.Styled.ActionBar.TitleTextStyle" parent="@android:style/Widget.TextView">
+        <item name="android:textSize">30sp</item>
+        <item name="android:textColor">@android:color/white</item>
     </style>
 
 </resources>

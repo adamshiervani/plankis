@@ -7,12 +7,12 @@ var	Ticket = require('../schemas/ticket.js').tickets ,
 
 exports.getTicket = function(req, res){
 	/*
-		TODO: Check if UUID exist in DB. 
+		TODO: Check if UUID exist in DB.
 		This should be in the db cause when the application needs to register at start for GCM, push notification
 	*/
 
 	/*
-		TODO: 
+		TODO:
 		Check if a ticket already is sent. IF so then it should send the same. Do stop spam
 	*/
 	if (!req.param('uuid')) {
@@ -48,7 +48,7 @@ exports.getTicket = function(req, res){
 			usedTicket.setClientUuid(req.param('uuid'));
 			//Set the clients GCM reg id
 			User.findOne({uuid: req.param('uuid')},{id: 1}, function (err, users) {
-				
+
 				usedTicket.setClientId(users.id);
 				usedTicket.setTimeStamp(Date.now());
 				usedTicket.setExpires(validTicket.expires);
@@ -81,10 +81,13 @@ exports.addTicket = function (req, res) {
 	}
 
 	var ticket = new Ticket();
-	
+
 	ticket.setContent(req.param('msgTicket'));
 	ticket.setFrom(req.param('msgFrom'));
 	ticket.setUuid(req.param('uuid'));
+	ticket.setContent('msgTicket');
+	ticket.setFrom('msgFrom');
+	ticket.setUuid('uuid');
 	ticket.setTimeStamp(Date.now());
 	ticket.setExpires(Date.now() + config.tickets.expires);
 
@@ -129,7 +132,7 @@ exports.validationTickets = function (req, res) {
 };
 
 exports.countValidTickets = function (req, res) {
-	
+
 	timespan = +(Date.now() - config.tickets.expires);
 
 	Ticket.count({ timestamp: { $gt: timespan }}, function (err, c) {

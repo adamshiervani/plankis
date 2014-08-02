@@ -1,34 +1,39 @@
 package com.johfornicad.plankis.app;
 
 import android.app.ActionBar;
-import android.app.Activity;
-import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.location.Location;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v4.widget.DrawerLayout;
-import android.telephony.TelephonyManager;
+import android.text.Spannable;
+import android.text.SpannableString;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
+import com.google.gson.JsonObject;
 import com.johfornicad.plankis.app.gcm.GoogleCloud;
-import com.johfornicad.plankis.app.ui.FeedView;
-import com.johfornicad.plankis.app.ui.TicketFragment;
+import com.johfornicad.plankis.app.ui.ReportLocationListener;
+import com.johfornicad.plankis.app.ui.ReportView;
+import com.johfornicad.plankis.app.utils.TypefaceSpan;
+import com.koushikdutta.async.future.FutureCallback;
+import com.koushikdutta.ion.Ion;
 
-import java.util.UUID;
 
+public class MainActivity extends FragmentActivity {
 
-public class MainActivity extends FragmentActivity
-        implements NavigationDrawerFragment.NavigationDrawerCallbacks {
+//    public final static String BASE_URL = "http://107.170.133.137:3000";
+//    public final static String BASE_URL = "http://192.168.1.23:3000";
+    public final static String BASE_URL = "http://192.168.56.1:3000";
+//    public final static String BASE_URL = "http://192.168.178.141:3000";
+//    public final static String BASE_URL = "http://192.168.178.52:3000";
+//    public final static String BASE_URL = "http://192.168.1.23:3000";
+//    public final static String BASE_URL = "http://192.168.0.16:3000";
+//    public final static String BASE_URL = "http://192.168.178.52:3000";
 
-    private NavigationDrawerFragment mNavigationDrawerFragment;
-
-    private CharSequence mTitle;
-
-    public Activity getActivity() {
-        return getActivity();
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,52 +44,36 @@ public class MainActivity extends FragmentActivity
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
-        mNavigationDrawerFragment = (NavigationDrawerFragment)
-                getFragmentManager().findFragmentById(R.id.navigation_drawer);
-        mTitle = getTitle();
-
-        // Set up the drawer.
-        mNavigationDrawerFragment.setUp(
-                R.id.navigation_drawer,
-                (DrawerLayout) findViewById(R.id.drawer_layout));
 
 
-        //Set the UUID
-        checkIfFirstBoot();
+        Initialize init = new Initialize(getApplication());
+
+        //TODO: Splash screen
+
+//        //Set the UUID
+        init.setUUID();
 
         //Initialize the Google Cloud Messaging
+        init.setUUID();
         new GoogleCloud(MainActivity.this, getApplicationContext()).initialize();
 
-    }
+
+        SpannableString s = new SpannableString("Plankplaneraren");
+        s.setSpan(new TypefaceSpan(this, "Qwigley-Regular.ttf"), 0, s.length(),
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+        // Update the action bar title with the TypefaceSpan instance
+        ActionBar actionBar = getActionBar();
+        assert actionBar != null;
+        actionBar.setTitle(s);
 
 
-    private void checkIfFirstBoot() {
 
-        SharedPreferences prefs = this.getSharedPreferences(MainActivity.class.getSimpleName(),
-                Context.MODE_PRIVATE);
-
-        //Assume true if the key does not yet exist
-        if (prefs.getBoolean("first_launch", true)) {
-
-            //Generate random UUID based on multiple variables
-            final TelephonyManager tm = (TelephonyManager) getBaseContext().getSystemService(Context.TELEPHONY_SERVICE);
-
-            final String tmDevice, tmSerial, androidId;
-            tmDevice = "" + tm.getDeviceId();
-            tmSerial = "" + tm.getSimSerialNumber();
-            androidId = "" + android.provider.Settings.Secure.getString(getContentResolver(), android.provider.Settings.Secure.ANDROID_ID);
-
-            UUID deviceUuid = new UUID(androidId.hashCode(), ((long) tmDevice.hashCode() << 32) | tmSerial.hashCode());
-
-            SharedPreferences.Editor edit = prefs.edit();
-            edit.putString("UUID", deviceUuid.toString());
-            edit.commit();
-
-        } else {
-            SharedPreferences.Editor edit = prefs.edit();
-            edit.putBoolean("first_launch", false);
-            edit.commit();
+        if (savedInstanceState == null) {
+            Fragment fragment = new ReportView();
+            getSupportFragmentManager().beginTransaction().add(R.id.container, fragment).commit();
         }
+
     }
 
     @Override
@@ -92,55 +81,31 @@ public class MainActivity extends FragmentActivity
         super.onResume();
     }
 
-    @Override
-    public void onNavigationDrawerItemSelected(int position) {
-        FragmentTransaction transaction = this.getSupportFragmentManager().beginTransaction();
-
-        switch (position) {
-            case 0:
-                transaction
-                        .replace(R.id.container, FeedView.newInstance())
-                        .commit();
-                break;
-            case 1:
-                transaction.replace(R.id.container, TicketFragment.newInstance())
-                        .commit();
-                break;
-        }
-    }
-
-
-    public void onSectionAttached(int number) {
-        switch (number) {
-            case 1:
-                mTitle = getString(R.string.title_reportFeed_1);
-                break;
-            case 2:
-                mTitle = getString(R.string.title_ticketsFeed_2);
-                break;
-        }
-    }
 
     public void restoreActionBar() {
         ActionBar actionBar = getActionBar();
         assert actionBar != null;
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
         actionBar.setDisplayShowTitleEnabled(true);
-        actionBar.setTitle(mTitle);
-    }
+        actionBar.setDisplayUseLogoEnabled(false);
 
+        //Set custom font for the actionbar title
+        SpannableString s = new SpannableString(getString(R.string.app_name));
+            s.setSpan(new TypefaceSpan(this, "Qwigley-Regular.ttf"), 0, s.length(),
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+        // Update the action bar title with the TypefaceSpan instance
+        actionBar.setTitle(s);
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        if (!mNavigationDrawerFragment.isDrawerOpen()) {
-            // Only show items in the action bar relevant to this screen
-            // if the drawer is not showing. Otherwise, let the drawer
-            // decide what to show in the action bar.
-            getMenuInflater().inflate(R.menu.main, menu);
-            restoreActionBar();
-            return true;
-        }
-        return super.onCreateOptionsMenu(menu);
+        // Only show items in the action bar relevant to this screen
+        // if the drawer is not showing. Otherwise, let the drawer
+        // decide what to show in the action bar.
+        getMenuInflater().inflate(R.menu.main, menu);
+        restoreActionBar();
+        return true;
     }
 
     @Override
@@ -148,8 +113,42 @@ public class MainActivity extends FragmentActivity
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-        return (id == R.id.action_settings) || super.onOptionsItemSelected(item);
+        switch (item.getItemId()) {
+            case R.id.action_report:
+                    new ReportLocationListener(this, new ReportLocationListener.CustomLocationListener() {
+                        @Override
+                        public void onLocationInterface(Location location) {
+                            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+
+                            JsonObject json = new JsonObject();
+
+                            json.addProperty("longitude", location.getLongitude());
+                            json.addProperty("latitude", location.getLatitude());
+                            json.addProperty("uuid", prefs.getString("UUID", ""));
+
+                            Ion.with(getApplicationContext(),  MainActivity.BASE_URL + "/report" )
+                                .setJsonObjectBody(json)
+                                .asJsonObject()
+                                .setCallback(new FutureCallback<JsonObject>() {
+                                    @Override
+                                    public void onCompleted(Exception e, JsonObject result) {
+                                        Toast.makeText(getApplicationContext(), "lol", Toast.LENGTH_LONG);
+                                    }
+                                });
+
+                        }
+
+
+                    }).startTracking();
+                    return true;
+
+            case R.id.action_settings:
+
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+
     }
 
 }

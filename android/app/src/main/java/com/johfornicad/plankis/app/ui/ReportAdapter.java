@@ -1,6 +1,7 @@
 package com.johfornicad.plankis.app.ui;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,14 +10,15 @@ import android.widget.TextView;
 
 import com.google.gson.JsonArray;
 import com.johfornicad.plankis.app.R;
+import com.johfornicad.plankis.app.utils.Typefaces;
 
 import static java.lang.System.currentTimeMillis;
 
-public class FeedAdapter extends BaseAdapter {
+public class ReportAdapter extends BaseAdapter {
     private final Context context;
     private final JsonArray content;
 
-    public FeedAdapter(Context context, JsonArray jsonArray) {
+    public ReportAdapter(Context context, JsonArray jsonArray) {
         this.context = context;
         this.content = jsonArray;
     }
@@ -46,25 +48,33 @@ public class FeedAdapter extends BaseAdapter {
         //Initialize the view components
         TextView stationTxt = (TextView) (rowView != null ? rowView.findViewById(R.id.station) : null);
         TextView areaTxt = (TextView) (rowView != null ? rowView.findViewById(R.id.area) : null);
-        TextView stationPicTxt = (TextView) (rowView != null ? rowView.findViewById(R.id.stationPic) : null);
         TextView timestampTxt = (TextView) (rowView != null ? rowView.findViewById(R.id.time) : null);
-
-        //TODO: Think of if ranking should exist, if so how do we remove spam. Maybe only ability to report if in area.
         TextView rankTxt = (TextView) (rowView != null ? rowView.findViewById(R.id.rank) : null);
+
+        // Set custom fonts on all the textfield
+        Typeface latoLight = Typefaces.get(this.context, "fonts/Lato-Lig.ttf");
+        Typeface latoReg = Typefaces.get(this.context, "fonts/Lato-Reg.ttf");
+        Typeface latoBold = Typefaces.get(this.context, "fonts/Lato-Bol.ttf");
+
 
 
         //Check if the components are null
         if (stationTxt != null &&
                 areaTxt != null &&
-                stationPicTxt != null &&
-                timestampTxt != null &&
-                rankTxt != null) {
+                timestampTxt != null
+            ) {
+
+            // Set fonts
+            areaTxt.setTypeface(latoLight);
+            stationTxt.setTypeface(latoReg);
+            timestampTxt.setTypeface(latoReg);
+            rankTxt.setTypeface(latoReg);
+
 
             //Declare the Station and area
             String station = content.get(position).getAsJsonObject().get("station").getAsString();
             String area = content.get(position).getAsJsonObject().get("area").getAsString();
             long timestamp = content.get(position).getAsJsonObject().get("timestamp").getAsLong();
-            final String id = content.get(position).getAsJsonObject().get("_id").getAsString();
             String rank = content.get(position).getAsJsonObject().get("rank").getAsString();
 
 
@@ -72,31 +82,11 @@ public class FeedAdapter extends BaseAdapter {
             stationTxt.setText(station);
             areaTxt.setText(area);
             areaTxt.setText(area);
-            stationPicTxt.setText(getFirstCharacter(area));
             timestampTxt.setText(readableTimestamp(timestamp));
-            rankTxt.setText("Confirmed " + rank + " times");
+            rankTxt.setText("Rank " + rank);
         }
 
         return rowView;
-    }
-
-    public String getFirstCharacter(String area) {
-
-        Boolean match = false;
-        int i = 0;
-        String firstChar = "";
-
-        //Get the first character but not S and U
-        // The reason for this, is we use the station and not area, a lot of station begins with S/U
-        //TODO: Check for funky characters, ie. slash, dot etc..
-        while (!match) {
-            if (!(area.charAt(i) + "").equals("S") || !(area.charAt(i) + "").equals("S")) {
-                firstChar = area.charAt(i) + "";
-                match = true;
-            }
-            i++;
-        }
-        return firstChar;
     }
 
     public String readableTimestamp(long time) {

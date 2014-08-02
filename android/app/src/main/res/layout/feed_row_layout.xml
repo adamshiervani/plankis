@@ -1,8 +1,8 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="150dp">
+    android:layout_height="75dp">
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginBottom="4dp"
@@ -13,70 +13,82 @@
         android:background="@drawable/bg_card"
         android:orientation="horizontal">
 
-        <TextView
-            android:id="@+id/stationPic"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:layout_gravity="center"
-            android:layout_marginRight="10dp"
-            android:background="@drawable/rounded"
-            android:gravity="center"
-            android:text="S"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textColor="#FFF"
-            android:textSize="40dp"
-            android:textStyle="bold" />
-
         <LinearLayout
             android:layout_width="fill_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
-
-            <TextView
-                android:id="@+id/area"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:text="Neuköln"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
-
-            <TextView
-                android:id="@+id/station"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:text="Hållplats: Rathaus Neuköln"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
-
-            <TextView
-                android:id="@+id/time"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="4 minutes ago" />
-
-            <View
-                android:layout_width="fill_parent"
-                android:layout_height="1dp"
-                android:layout_marginBottom="7dp"
-                android:layout_marginTop="7dp"
-                android:background="@android:color/darker_gray" />
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center_vertical"
+            android:layout_gravity="center_vertical"
+            android:layout_centerVertical="true"
+            >
 
             <LinearLayout
+                android:orientation="horizontal"
                 android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:orientation="horizontal">
+                android:layout_height="fill_parent">
 
                 <TextView
-                    android:id="@+id/rank"
+                    android:id="@+id/area"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:text="Confirmed 4 times" />
+                    android:layout_gravity="left"
+                    android:textStyle="bold"
+                    android:textColor="#333333"
+                    android:textAllCaps="true"
+                    android:text="Haga"
+                    android:textSize="20sp"
+                    />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                >
+
+                <TextView
+                    android:id="@+id/station"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textStyle="bold"
+                    android:textColor="#777777"
+                    android:textAllCaps="true"
+                    android:text="Brunnsparken"
+                    android:textSize="17sp"
+                    />
+                <TextView
+                    android:id="@+id/time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:layout_marginLeft="10dp"
+                    android:text="5 minutes ago"
+                    android:textColor="#9e9e9e"
+                    android:textAllCaps="true"
+                    android:textSize="12sp"
+                    />
             </LinearLayout>
 
         </LinearLayout>
 
 
-    </LinearLayout>
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/rank"
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"
+        android:text="rank 10"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:textColor="#333333"
+        android:textAllCaps="true"
+        android:gravity="right"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginRight="15dp"
+        android:layout_marginTop="15dp" />
 
 
 </RelativeLayout>

@@ -1,8 +1,10 @@
 package com.johfornicad.plankis.app.ui;
 
 import android.app.Activity;
+import android.app.PendingIntent;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
@@ -23,7 +25,6 @@ import com.koushikdutta.ion.Ion;
 
 //TODO: Inherit interface.
 public class TicketFragment extends Fragment {
-    private static final String baseUrl = "http://192.168.56.1:3000/ticket";
     public static View view;
 
     public TicketFragment() {
@@ -54,14 +55,13 @@ public class TicketFragment extends Fragment {
         SharedPreferences prefs = getActivity().getSharedPreferences(MainActivity.class.getSimpleName(),
                 Context.MODE_PRIVATE);
         //Get the device previously generated UUID
-        Ion.with(getActivity(), baseUrl + "/" + prefs.getString("UUID", ""))
+        Ion.with(getActivity(), MainActivity.BASE_URL +"/ticket/" + prefs.getString("UUID", ""))
                 .asJsonObject()
                 .setCallback(new FutureCallback<JsonObject>() {
                     @Override
                     public void onCompleted(Exception e, JsonObject result) {
                         if (result.has("status")) {
                             Log.d("Adam", "Buyticket");
-                            Toast.makeText(getActivity(), "Bought Ticket", Toast.LENGTH_SHORT).show();
                             buyTicketFromProvider();
                         } else {
                             Log.d("Adam", result + "");
@@ -77,8 +77,17 @@ public class TicketFragment extends Fragment {
 
     private void buyTicketFromProvider() {
         //TODO: Buy ticket from provider.Automate city detection
-        SmsManager smsManager = SmsManager.getDefault();
-        smsManager.sendTextMessage("+4677421", null, "I want a ticket from provider!", null, null);
+//        SmsManager smsManager = SmsManager.getDefault();
+
+//        smsManager.sendTextMessage("+467377747780", null, "I want a ticket from provider!", null, null);
+        SmsManager sms = SmsManager.getDefault();
+        PendingIntent sentPI;
+        String SENT = "SMS_SENT";
+
+        sentPI = PendingIntent.getBroadcast(getActivity(), 0, new Intent(SENT), 0);
+
+        sms.sendTextMessage("+46737747780", null, "Ticket", sentPI, null);
+        Toast.makeText(getActivity(), "Bought Ticket", Toast.LENGTH_SHORT).show();
 
         //When the ticket is incoming, the smslistener will read it and send to backend
     }

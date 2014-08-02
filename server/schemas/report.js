@@ -12,7 +12,7 @@ var schema = new Schema({
 	latitude: {
 		type: String
 	},
-	
+
 	area: {
 		type: String
 	},
@@ -20,7 +20,9 @@ var schema = new Schema({
 	station: {
 		type: String
 	},
-	// TODO: Add CITY
+	city: {
+		type: String
+	},
 	rank: {
 		type: Number,
 		default: config.confirm.spans.max,
@@ -50,6 +52,9 @@ schema.methods.setArea = function(area) {
 
 schema.methods.setStation = function(station) {
 	this.station = station;
+};
+schema.methods.setCity = function(city) {
+	this.city = city;
 };
 
 schema.methods.setRank = function(rank) {

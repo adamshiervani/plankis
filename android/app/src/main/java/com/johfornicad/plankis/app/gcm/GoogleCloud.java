@@ -183,8 +183,7 @@ public class GoogleCloud {
      */
     private void sendRegistrationIdToBackend(String paramregid) {
 
-//        Ion.with(acContext, "http://10.0.2.2:3000/gcm")
-        Ion.with(acContext, "http://192.168.56.1:3000/gcm")
+        Ion.with(acContext, MainActivity.BASE_URL + "/gcm")
                 .setBodyParameter("id", paramregid)
                 .setBodyParameter("uuid", getPreferences("UUID"))
                 .asJsonArray()

@@ -11,5 +11,12 @@
     <string name="title_activity_main_view">MainView</string>
     <string name="hello_world">Welcome to plankis!</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_splash_screen">SplashScreen</string>
+
+    <!--SPLASH SCREEN-->
+    <string name="splash_sub_text">the world first real travel planner</string>
+    <string name="splash_instructions_swipe">swipe to setup</string>
+    <string name="splash_instructions_report">explain the report functionality</string>
+    <string name="splash_instructions_ticket">explain the ticket functionality</string>
 
 </resources>

@@ -6,15 +6,20 @@ var	Report = require('../schemas/report.js'),
 
 
 exports.getReport = function(req, res){
-
-	//TODO: Only send relevant data, not only station, area, timestamp
-	Report.find({ timestamp: { $gt: +(Date.now() - config.confirm.time.timediff) } }, {area: 1, timestamp: 1, station: 1, rank: 1, '_id': 1}).sort({timestamp: -1}).exec(function(err, report) {
-		if (err) {
-			res.json(204, []);
-			return;
-		}
-		res.json(200, report);
-	});
+	if (!req.param('city')) {
+		res.json(400, {error: 'Missing parameter!'});
+		return;
+	}
+	// findArea.area(req.param('latitude'), req.param('longitude'), function (err, area) {
+		//TODO: Only send relevant data, not only station, area, timestamp
+		Report.find({ timestamp: { $gt: +(Date.now() - config.confirm.time.timediff)}, city: req.param('city')}, {area: 1, timestamp: 1, station: 1, rank: 1, '_id': 1}).sort({timestamp: -1}).exec(function(err, report) {
+			if (err) {
+				res.json(204, err);
+				return;
+			}
+			res.json(200, report);
+		});
+	// })
 };
 
 
@@ -61,66 +66,82 @@ exports.addReport = function (req, res) {
 
 	function callbackDbFind (shortest, shortest_report_id) {
 		if (+shortest <= +config.confirm.map.boostDistance && shortest_report_id) {
-			
+
 			//Whohoo! There is already a report withing the distance and timeframe, thus, we increase the importance/rank on the report
 			console.log('Updating existing report');
-			
+
 			//Get the ObjectID Type
-			var ObjectId = require('mongoose').Types.ObjectId; 
+			var ObjectId = require('mongoose').Types.ObjectId;
 
-			//Update the nearest report AND if the rank is not more than 10 , because that is the maximum!!
-			Report.update({_id : new ObjectId(shortest_report_id), rank: { $lt : config.confirm.spans.max - config.confirm.spans.inc}}, {$inc: { 'rank': config.confirm.spans.inc }}, function (err, report) {
-				if (err) {
-					res.json(204, []);
-					return;
-				}
-				if (report === 1) {
-					console.log('UPDATED');
-					res.json(200, 'OK');
-				}else{
-					console.log('NOT NOT NOT UPDATED');
-					res.json(200, 'OK');
-				}
-				//Success
-			});
+			// //Update the nearest report AND if the rank is not more than 30 , because that is the maximum!!
+			Report.update(
+				{
+					_id : new ObjectId(shortest_report_id),
+					rank: {
+						$lt : config.confirm.spans.max - config.confirm.spans.inc
+					}
+				},  {$inc: {
+						'rank':config.confirm.spans.inc
+					}}
+				,{upsert:true,safe:true}, function (err, report) {
+						if (err) {
+							res.json(204, []);
+							return;
+						}
+						if (report === 1) {
+							console.log('UPDATED');
+							res.json(200, 'OK');
+						}else{
+							console.log('NOT NOT NOT UPDATED');
+							res.json(200, 'OK');
+						}
+						//Success
+				});
 
-			console.log("Shortest distance: " + shortest);
-
+					console.log("Shortest distance: " + shortest);
 		}else{
+
+
 			// No previous entry within the distance and timeframe, thus, we need to create a new one.
 			console.log('Not short distance and time. Cretes a new entry.');
 
+			// //Create new entry because there isnt any similiar report made.
+			findArea.area(req.param('latitude'), req.param('longitude'), function (err, area) {
+				console.log(err);
+				console.log(area);
+				if (err || typeof(area) === "undefined") {
+					console.log('Area error');
+					res.json(401, 'Area Error');
+					return;
+				}
 
-				// //Create new entry because there isnt any similiar report made.
-				findArea(req.param('latitude'), req.param('longitude'), function (err) {
-					console.log('Area error!');
-					res.json(400, err);
-				} , function (area) {
-
-					//Create a new Report
-					var report = new Report();
-
-					//Set all the Report variables
-					report.setLongitude(req.param('longitude'));
-					report.setLatitude(req.param('latitude'));
-					report.setArea(area.neighborhoods[0].name);
-					report.setStation('nearStation');
-					// report.setStation(nearStation);
-					report.setUuid(req.param('uuid'));
-					report.setTimeStamp(+Date.now());
+				//Create a new Report
+				var report = new Report();
+				console.log(JSON.stringify(area));
+				//Set all the Report variables
+				report.setLongitude(req.param('longitude'));
+				report.setLatitude(req.param('latitude'));
+				report.setArea(area.neighborhoods[0].name);
+				report.setStation('nearStation');
+				report.setCity(area.neighborhoods[0].city);
+				// report.setStation(nearStation);
+				report.setUuid(req.param('uuid'));
+				report.setTimeStamp(+Date.now());
 
 
-					//Save to database
-					report.save(function (err, report) {
-						if (err) {
-							console.log('Save Error');
-							res.json(400, report);
-						}
-
-						//Success
-						res.json(200, report);
-					});
+				//Save to database
+				report.save(function (err, report) {
+					if (err) {
+						console.log('Save Error');
+						res.json(400, report);
+					}
+					//Success
+					res.json(200, report);
 				});
+
+			});
+
+
 		}
 	}
 };

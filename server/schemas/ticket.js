@@ -1,6 +1,6 @@
 var mongoose = require('mongoose'),
 	Schema = mongoose.Schema;
-	
+
 var ticketSchema = new Schema({
 
 	content: {
@@ -75,7 +75,6 @@ var usedTicketsSchema = new Schema({
 
 });
 usedTicketsSchema.methods.setTicketid = function(content) {
-	//TODO: Add validation??
 	this.ticketid = content;
 };
 
@@ -106,4 +105,29 @@ usedTicketsSchema.methods.setFrom = function(from) {
 mongoose.model('usedTickets', usedTicketsSchema);
 exports.usedTickets = mongoose.model('usedTickets');
 
+var ticketsPatternSchema = new Schema({
 
+	city: {
+		type: String
+	},
+	ticketpattern: {
+		type: String
+	},
+	ticketfrom: {
+		type: String
+	}
+
+});
+ticketsPatternSchema.methods.setCity = function(city) {
+	this.city = city;
+};
+
+ticketsPatternSchema.methods.setTicketPattern = function(pattern) {
+	this.ticketpattern = pattern;
+};
+ticketsPatternSchema.methods.setTicketFrom = function(from) {
+	this.ticketfrom = from;
+};
+
+mongoose.model('ticketsPattern', ticketsPatternSchema);
+exports.ticketsPattern = mongoose.model('ticketsPattern');

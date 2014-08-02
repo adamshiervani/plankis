@@ -1,33 +1,36 @@
 package com.johfornicad.plankis.app.ui;
 
 import android.app.Activity;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.ListFragment;
 import android.util.Log;
 import android.view.View;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.johfornicad.plankis.app.MainActivity;
 import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
 
-public class FeedView extends ListFragment {
+public class ReportView extends ListFragment {
 
-    private static final String baseUrl = "http://192.168.56.1:3000/report";
 
-    public FeedView() {
+    public ReportView() {
     }
 
-    public static FeedView newInstance() {
-        return new FeedView();
+    public static ReportView newInstance() {
+        return new ReportView();
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
 
-        Ion.with(getActivity(), baseUrl)
+        Ion.with(getActivity(), MainActivity.BASE_URL + "/report?city=" + prefs.getString("city", ""))
                 .asJsonArray()
                 .setCallback(new FutureCallback<JsonArray>() {
                     @Override
@@ -37,7 +40,6 @@ public class FeedView extends ListFragment {
                         String station, area, timestamp, id, rank;
 
                         JsonArray jsonArray = new JsonArray();
-                        if (result.isJsonNull()){return;}
 
                         //TODO: When the backend only send the correct vales, you dont have to create a new JSON array. Just pass it over to the adapter
                         for (int i = 0; i < result.size(); i++) {
@@ -60,8 +62,9 @@ public class FeedView extends ListFragment {
                             Log.d("Adam", "Adam");
                         }
 
-                        FeedAdapter adapter = new FeedAdapter(getActivity(), jsonArray);
+                        ReportAdapter adapter = new ReportAdapter(getActivity(), jsonArray);
                         setListAdapter(adapter);
+
                     }
                 });
     }
@@ -77,11 +80,6 @@ public class FeedView extends ListFragment {
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-//        ((MainActivity) activity).onSectionAttached(
-//                getArguments().getInt(ARG_SECTION_NUMBER));
-    }
-    @Override
-    public void onResume(){
-        //TODO: Recall reports to get the newest
+
     }
 }

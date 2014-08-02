@@ -1,0 +1,14 @@
+{
+  "name": "front-end",
+  "private": true,
+  "dependencies": {
+    "jquery": "~1.11.0",
+    "bourbon": "~4.0.2",
+    "normalize-scss": "~3.0.1",
+    "bootstrap-sass-official": "~3.2.0",
+    "bitters": "~0.10.0",
+    "neat": "~1.6.0",
+    "refills": "~0.0.2"
+  },
+  "devDependencies": {}
+}

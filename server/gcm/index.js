@@ -36,7 +36,7 @@ exports.sendMessage = function (validationFrom, validationMessage , lol, callbac
 		console.log(result);
 	    callback(err, result);
 	});
-	
+
 };
 
 exports.setRegId = function (req, res) {
@@ -46,7 +46,7 @@ exports.setRegId = function (req, res) {
 		return;
 	}
 	console.log(req.body);
-	
+
 	User.find({uuid: req.param('uuid')}, {}).sort({timestamp: -1}).exec(function(err, report) {
 		if (err) {
 			res.json(204, {"status": "error"});

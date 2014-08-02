@@ -4,7 +4,7 @@ var OAuth = require('oauth').OAuth;
 var Client = function(oauth_config) {
   this.oauthToken = oauth_config.token;
   this.oauthTokenSecret = oauth_config.token_secret;
-  
+
   this.oauth = new OAuth(
     null,
     null,
@@ -21,10 +21,11 @@ var Client = function(oauth_config) {
 var base_url = "http://api.yelp.com/v2/";
 
 Client.prototype.get = function(resource, params, callback) {
+    console.log(querystring.stringify(params));
   return this.oauth.get(
-    base_url + resource + '?' + querystring.stringify(params), 
-    this.oauthToken, 
-    this.oauthTokenSecret, 
+    base_url + resource + '?' + querystring.stringify(params),
+    this.oauthToken,
+    this.oauthTokenSecret,
     function(error, data, response) {
       if(!error) data = JSON.parse(data);
       callback(error, data, response);

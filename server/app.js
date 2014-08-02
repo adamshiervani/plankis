@@ -2,23 +2,24 @@
  * Module dependencies.
  */
 var express = require('express') ,
-	report = require('./routes/report') , 
-	ticket = require('./routes/ticket') , 
-	http = require('http') , 
+	report = require('./routes/report') ,
+	ticket = require('./routes/ticket') ,
+	http = require('http') ,
 	mongoose = require('mongoose'),
 	yelp = require('./location/findarea.js') ,
 	gcm = require('./gcm/index.js'),
+	setup = require('./routes/setup'),
 	rankCron = require('./cron/rank.js');
 
 /**
- *	Mongo Configuration	
+ *	Mongo Configuration
  */
 mongoose.connect('localhost', 'plankdb');
 
 var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'Connection error:'));
 
-	
+
 var app = express();
 app.configure(function(){
 	app.set('port', process.env.PORT || 3000);
@@ -33,13 +34,17 @@ app.configure('development', function() {
 });
 
 /**
- *	HTTP-Requests	
+ *	HTTP-Requests
  */
-//Check if the connection is open before setting up 
+//Check if the connection is open before setting up
 db.once('open', function () {
 
 	// Setup the Cronjob
 	rankCron();
+
+	// Profile
+	app.post('/setup', setup.getConfiguration);
+
 
 	//Reports
 	app.get('/report', report.getReport);
@@ -55,7 +60,6 @@ db.once('open', function () {
 	//Google Cloud Messenging
 	// app.get('/gcm', gcm.sendMessage);
 	app.post('/gcm', gcm.setRegId);
-
 
 });
 
