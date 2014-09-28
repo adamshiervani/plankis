@@ -11,12 +11,13 @@ exports.getTicket = function(req, res){
 		This should be in the db cause when the application needs to register at start for GCM, push notification
 	*/
 
+
 	/*
 		TODO:
 		Check if a ticket already is sent. IF so then it should send the same. Do stop spam
 	*/
 	if (!req.param('uuid')) {
-		res.json(400, {status: 'missing parameters'});
+		res.json(400, {error: 'Missing parameters'});
 		return;
 	}
 
@@ -46,6 +47,7 @@ exports.getTicket = function(req, res){
 			usedTicket.setTicketid(validTicket._id);
 			usedTicket.setHostUuid(validTicket.uuid);
 			usedTicket.setClientUuid(req.param('uuid'));
+
 			//Set the clients GCM reg id
 			User.findOne({uuid: req.param('uuid')},{id: 1}, function (err, users) {
 
@@ -60,7 +62,6 @@ exports.getTicket = function(req, res){
 					}
 					//TODO: Does it really have to be in this callback, Can it be further up. Does the function still run when answering on the request
 					res.json(200, {from: validTicket.from, message: validTicket.content});
-					// res.json(200, {});
 				});
 			});
 		}
@@ -85,9 +86,11 @@ exports.addTicket = function (req, res) {
 	ticket.setContent(req.param('msgTicket'));
 	ticket.setFrom(req.param('msgFrom'));
 	ticket.setUuid(req.param('uuid'));
-	ticket.setContent('msgTicket');
-	ticket.setFrom('msgFrom');
-	ticket.setUuid('uuid');
+
+	// ticket.setContent('msgTicket');
+	// ticket.setFrom('msgFrom');
+	// ticket.setUuid('uuid');
+
 	ticket.setTimeStamp(Date.now());
 	ticket.setExpires(Date.now() + config.tickets.expires);
 
@@ -110,10 +113,9 @@ exports.validationTickets = function (req, res) {
 	}
 
 		console.log("UUID: " +  req.param('uuid'));
-		// Used.find({hostuuid: req.param('uuid')},{cliendid: 1},function (err, used) {
 		Used.find({hostuuid: req.param('uuid')},{clientid: 1},function (err, used) {
 			if (err) {
-				res.json(400, err);
+				res.json(400, {error: err});
 			}
 			var sendValidationTo = [];
 			for (var i = 0; i < used.length; i++) {
@@ -122,7 +124,7 @@ exports.validationTickets = function (req, res) {
 
 			gcm.sendMessage(req.param('msgfrom'), req.param('msgvalidation'), sendValidationTo, function (err, result) {
 				if (err) {
-					res.json(400, err);
+					res.json(400, {error: err});
 					return;
 				}
 				result.asasd = 'asd';
@@ -136,9 +138,8 @@ exports.countValidTickets = function (req, res) {
 
 	Ticket.count({ timestamp: { $gt: timespan }}, function (err, c) {
 		if (err) {
-			res.json(204, err);
+			res.json(204, {error: err});
 		}
 		res.json(200, c);
 	});
-
 };

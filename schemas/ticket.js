@@ -12,11 +12,9 @@ var ticketSchema = new Schema({
 	uuid: {
 		type: String
 	},
-	// TODO: Add CITY
 	timestamp: {
 		type: Number
 	},
-	// TODO: Add CITY
 	expires: {
 		type: Number
 	}
@@ -45,7 +43,6 @@ ticketSchema.methods.setExpires = function(expires) {
 
 mongoose.model('tickets', ticketSchema);
 exports.tickets = mongoose.model('tickets');
-
 
 
 // Used Tickets

@@ -13,7 +13,7 @@ exports.getReport = function(req, res){
 
 	Report.find({ timestamp: { $gt: +(Date.now() - config.confirm.time.timediff)}, city: req.param('city')}, {area: 1, timestamp: 1, station: 1, rank: 1, '_id': 1}).sort({timestamp: -1}).exec(function(err, report) {
 		if (err) {
-			res.json(204, err);
+			res.json(204, {error: err});
 			return;
 		}
 		res.json(200, report);
@@ -39,7 +39,7 @@ exports.addReport = function (req, res) {
 	//TODO : Need a more optimized way of doing this. There is probably some MAX function in MongoDb
 	Report.find({ timestamp: { $gt: +(Date.now() - config.confirm.time.timediff) } }).sort({timestamp: -1}).exec(function(err, report) {
 		if (err) {
-			res.json(204, []);
+			res.json(204, err);
 			return;
 		}
 
@@ -78,17 +78,19 @@ exports.addReport = function (req, res) {
 					rank: {
 						$lt : config.confirm.spans.max - config.confirm.spans.inc
 					}
-				},  {$inc: {
+				},
+				{
+					$inc: {
 						'rank':config.confirm.spans.inc
-					}}
-				,{upsert:true,safe:true}, function (err, report) {
+					}
+				},{ upsert:true , safe:true}, function (err, report) {
 						if (err) {
-							res.json(204, []);
+								res.json(204, {'error': err});
 							return;
 						}
 						if (report === 1) {
 							console.log('UPDATED');
-							res.json(200, 'OK');
+							res.json(200, {'updated': true});
 						}else{
 							console.log('NOT NOT NOT UPDATED');
 							res.json(200, 'OK');
@@ -99,7 +101,6 @@ exports.addReport = function (req, res) {
 					console.log("Shortest distance: " + shortest);
 		}else{
 
-
 			// No previous entry within the distance and timeframe, thus, we need to create a new one.
 			console.log('Not short distance and time. Cretes a new entry.');
 
@@ -107,21 +108,27 @@ exports.addReport = function (req, res) {
 				function(callback){
 					// //Create new entry because there isnt any similiar report made.
 					findArea.area(req.param('latitude'), req.param('longitude'), function (err, area) {
-						if (err || typeof(area) === "undefined" || area.neighborhoods.length === 0) {
-							res.json(401, 'Area Error');
+						if (err || typeof(area) === "undefined") {
+							res.json(401, {error: err});
+							return;
+						}
+						if (area.neighborhoods.length === 0) {
+							res.json(204, {error: 'No content'});
 							return;
 						}
 						callback(null, area);
 					});
 				},
 				function(callback){
+
+					// Find the nearest station based on the lati and long
 					findstation(req.param('latitude'), req.param('longitude'), function (err, response) {
 						if (err) {
-							res.send('400', "errors");
+							res.json('400', {error: err});
 							return;
 						}
 						if (response.length === 0 ) {
-							res.send(400, 'Cant find');
+							res.json(204, {error: 'No content'});
 							return;
 						}
 						var stop_name = response[0].stop_name;
@@ -131,6 +138,8 @@ exports.addReport = function (req, res) {
 				}
 			],
 			function(err, results){
+
+				// Declare the callback results
 			  var area			= results[0];
 				var stop_name = results[1];
 
