@@ -2,11 +2,12 @@ var request = require('request');
 var config 	= require('../configuration.js');
 
 module.exports = function (latitude, longitude, callback) {
-		var nearbyStationPath = 'http://localhost:8081/api/StopsNearby/'+ latitude+'/'+ longitude +'/0.25';
+	// Convert distance from kilometer to miles with doing km times 0.62137
+		var nearbyStationPath = 'http://localhost:8081/api/StopsNearby/'+ latitude+'/'+ longitude +'/' + config.confirm.map.boostDistance * 0.62137;
 
 		request(nearbyStationPath, function (error, response, body) {
 			if (error){
-				callback(error, {});
+				callback(error, null);
 				return;
 			}
 

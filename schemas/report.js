@@ -37,6 +37,8 @@ var schema = new Schema({
 		type: Number
 	}
 });
+
+
 schema.methods.setLongitude = function(longitude) {
 	//TODO: Add validation??
 	this.longitude = longitude;

@@ -26,7 +26,6 @@ exports.addReport = function (req, res) {
 		Generate click matrix between all the different reports.
 		 If a report is less than x Meters away from the new report, and withing X minutes, then add importance to the old report.
 	*/
-	console.log(req.body);
 	if (!req.param('longitude') || !req.param('latitude') || !req.param('uuid')) {
 		res.json(400, {error: 'Missing parameter!'});
 		return;
@@ -48,7 +47,7 @@ exports.addReport = function (req, res) {
 		for (var i = 0; i < report.length; i++) {
 
 			//Find the distance between the newly report and the previous ones(within the timframe)
-			var distance = utils.distance(lat_origin , long_origin, report[i].latitude, report[i].longitude, config.confirm.unit);
+			var distance = utils.distance(lat_origin , sketc, report[i].latitude, report[i].longitude, config.confirm.unit);
 
 			console.log('Distance: ' +  distance + ' KM');
 
@@ -103,10 +102,10 @@ exports.addReport = function (req, res) {
 
 			// No previous entry within the distance and timeframe, thus, we need to create a new one.
 			console.log('Not short distance and time. Cretes a new entry.');
+			// //Create new entry because there isnt any similiar report made.
 
-			async.series([
+			async.parallel([
 				function(callback){
-					// //Create new entry because there isnt any similiar report made.
 					findArea.area(req.param('latitude'), req.param('longitude'), function (err, area) {
 						if (err || typeof(area) === "undefined") {
 							res.json(401, {error: err});
@@ -127,13 +126,12 @@ exports.addReport = function (req, res) {
 							res.json('400', {error: err});
 							return;
 						}
+
 						if (response.length === 0 ) {
 							res.json(204, {error: 'No content'});
 							return;
 						}
-						var stop_name = response[0].stop_name;
 						callback(null, response[0].stop_name);
-
 					});
 				}
 			],
@@ -168,6 +166,7 @@ exports.addReport = function (req, res) {
 						console.log('Save Error');
 						res.json(400, report);
 					}
+					
 					//Success
 					res.json(200, report);
 				});

@@ -16,6 +16,7 @@ exports.getTicket = function(req, res){
 		TODO:
 		Check if a ticket already is sent. IF so then it should send the same. Do stop spam
 	*/
+
 	if (!req.param('uuid')) {
 		res.json(400, {error: 'Missing parameters'});
 		return;
@@ -87,6 +88,7 @@ exports.addTicket = function (req, res) {
 	ticket.setFrom(req.param('msgFrom'));
 	ticket.setUuid(req.param('uuid'));
 
+	//Mock data
 	// ticket.setContent('msgTicket');
 	// ticket.setFrom('msgFrom');
 	// ticket.setUuid('uuid');
