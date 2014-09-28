@@ -30,7 +30,6 @@ exports.area = function (latitude, longitude, callback) {
 
 
 exports.city = function (latitude, longitude, callback) {
-	console.log('CITY');
 	var yelp = require("../api/yelpinterface").createClient({
 		consumer_key: "aBvlOelO4pMRt3ujfH5tXw",
 		consumer_secret: "ZdnufhFVyu6iibxmfmw1kX8kw60",
@@ -38,5 +37,5 @@ exports.city = function (latitude, longitude, callback) {
 		token_secret: "3d7qf5Cr23TcRS3C3kQFvj6Iabc"
 	});
 
-	yelp.search({ll: '52.52,13.405'}, callback);
-}
+	// yelp.search({ll: '52.52,13.405'}, callback);
+};

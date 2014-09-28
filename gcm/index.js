@@ -9,16 +9,16 @@ exports.sendMessage = function (validationFrom, validationMessage , lol, callbac
 	// create a message with default values
 	var message = new gcm.Message();
 
-	// or with object values
-	var message = new gcm.Message({
-	    collapseKey: 'demo',
-	    delayWhileIdle: true,
-	    timeToLive: 3,
-	    data: {
-	        key1: 'message1',
-	        key2: 'message2'
-	    }
-	});
+	// Reference
+	// var message = new gcm.Message({
+	//     collapseKey: 'demo',
+	//     delayWhileIdle: true,
+	//     timeToLive: 3,
+	//     data: {
+	//         key1: 'message1',
+	//         key2: 'message2'
+	//     }
+	// });
 
 	var sender = new gcm.Sender('AIzaSyB80c4MgZ3skKI9Tup-Q8sg6eQ88203TiQ');
 	var registrationIds = [];
@@ -45,14 +45,14 @@ exports.setRegId = function (req, res) {
 		res.json(500, {error: 'Missing parameters'});
 		return;
 	}
-	console.log(req.body);
 
 	User.find({uuid: req.param('uuid')}, {}).sort({timestamp: -1}).exec(function(err, report) {
 		if (err) {
-			res.json(204, {"status": "error"});
+			res.json(204, {"status": err});
 			return;
 		}
 
+		// If they don't exist
 		if (report.length === 0) {
 			var user = new User();
 
