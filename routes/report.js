@@ -1,25 +1,23 @@
 var	Report 				= require('../schemas/report.js'),
 		findstation 	= require('../location/findstation.js'),
 		utils 				= require('../utils/utils.js'),
+		async 				= require('async'),
 		findArea 			= require('../location/findarea.js'),
 		config 				= require('../configuration.js');
-
 
 exports.getReport = function(req, res){
 	if (!req.param('city')) {
 		res.json(400, {error: 'Missing parameter!'});
 		return;
 	}
-	// findArea.area(req.param('latitude'), req.param('longitude'), function (err, area) {
-		//TODO: Only send relevant data, not only station, area, timestamp
-		Report.find({ timestamp: { $gt: +(Date.now() - config.confirm.time.timediff)}, city: req.param('city')}, {area: 1, timestamp: 1, station: 1, rank: 1, '_id': 1}).sort({timestamp: -1}).exec(function(err, report) {
-			if (err) {
-				res.json(204, err);
-				return;
-			}
-			res.json(200, report);
-		});
-	// })
+
+	Report.find({ timestamp: { $gt: +(Date.now() - config.confirm.time.timediff)}, city: req.param('city')}, {area: 1, timestamp: 1, station: 1, rank: 1, '_id': 1}).sort({timestamp: -1}).exec(function(err, report) {
+		if (err) {
+			res.json(204, err);
+			return;
+		}
+		res.json(200, report);
+	});
 };
 
 
@@ -105,27 +103,53 @@ exports.addReport = function (req, res) {
 			// No previous entry within the distance and timeframe, thus, we need to create a new one.
 			console.log('Not short distance and time. Cretes a new entry.');
 
-			// //Create new entry because there isnt any similiar report made.
-			findArea.area(req.param('latitude'), req.param('longitude'), function (err, area) {
-				console.log(err);
-				console.log(area);
-				if (err || typeof(area) === "undefined") {
-					console.log('Area error');
-					res.json(401, 'Area Error');
-					return;
+			async.series([
+				function(callback){
+					// //Create new entry because there isnt any similiar report made.
+					findArea.area(req.param('latitude'), req.param('longitude'), function (err, area) {
+						if (err || typeof(area) === "undefined" || area.neighborhoods.length === 0) {
+							res.json(401, 'Area Error');
+							return;
+						}
+						callback(null, area);
+					});
+				},
+				function(callback){
+					findstation(req.param('latitude'), req.param('longitude'), function (err, response) {
+						if (err) {
+							res.send('400', "errors");
+							return;
+						}
+						if (response.length === 0 ) {
+							res.send(400, 'Cant find');
+							return;
+						}
+						var stop_name = response[0].stop_name;
+						callback(null, response[0].stop_name);
+
+					});
 				}
+			],
+			function(err, results){
+			  var area			= results[0];
+				var stop_name = results[1];
 
 				//Create a new Report
 				var report = new Report();
-				console.log(JSON.stringify(area));
+
 				//Set all the Report variables
 				report.setLongitude(req.param('longitude'));
 				report.setLatitude(req.param('latitude'));
-				report.setArea(area.neighborhoods[0].name);
-				report.setStation('nearStation');
-				report.setCity(area.neighborhoods[0].city);
-				// report.setStation(nearStation);
 				report.setUuid(req.param('uuid'));
+
+				// GTFS
+				report.setStation(stop_name);
+
+				// Yelp
+				report.setArea(area.neighborhoods[0].name);
+				report.setCity(area.neighborhoods[0].city);
+				report.setStation(stop_name);
+
 				report.setTimeStamp(+Date.now());
 
 
@@ -138,9 +162,7 @@ exports.addReport = function (req, res) {
 					//Success
 					res.json(200, report);
 				});
-
 			});
-
 
 		}
 	}

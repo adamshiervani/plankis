@@ -1,29 +1,17 @@
 var request = require('request');
 var config 	= require('../configuration.js');
 
-module.exports = function (latitude, longitude, boost, success) {
-	var url = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=' + latitude + ',' + longitude + '&radius=' + config.findarea.radius + '&types=' + config.findarea.types + '&sensor=false&key=AIzaSyDQlznNx7-3MAPuiCgBwq93ng_VBmm1WJg';
-		console.log(url);
+module.exports = function (latitude, longitude, callback) {
+		var nearbyStationPath = 'http://localhost:8081/api/StopsNearby/52.486862/13.434864/0.25';
 
-	//http://stackoverflow.com/questions/3089772/find-nearest-transit-station-stopover-bus-train-etc-in-google-maps
-	// TODO: LOOP WITH INCREASING RADIUS
-		var assert = require('assert');
-		var util = require('util');
-		var OsmMongo = require('../node_modules/openstreetmapmongo/lib/osm-mongo').OsmMongo;
+		request(nearbyStationPath, function (error, response, body) {
+			if (error){
+				callback(error, {});
+				return;
+			}
 
-		settings = {
-			MONGO_HOST: 'localhost',
-			MONGO_PORT: 27017
-		};
-
-		osm = new OsmMongo(settings.MONGO_HOST, settings.MONGO_PORT);
-
-		// find a subway lines near Santiago center
-		osm.findOsmNear([ -70.650404, -33.4379537 ], 16, {railway: "subway"}, function(error, subway) {
-			var len = 0;
-			subway.ways.forEach(function(way) {
-				console.log(way);
-			});
-			success(error, way);
+			callback(null, JSON.parse(body));
+		
 		});
+
 };
