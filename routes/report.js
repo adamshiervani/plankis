@@ -1,8 +1,8 @@
-var	Report = require('../schemas/report.js'),
-	findstation = require('../location/findstation.js'),
-	utils = require('../utils/utils.js'),
-	findArea = require('../location/findarea.js'),
-	config = require('../configuration.js');
+var	Report 				= require('../schemas/report.js'),
+		findstation 	= require('../location/findstation.js'),
+		utils 				= require('../utils/utils.js'),
+		findArea 			= require('../location/findarea.js'),
+		config 				= require('../configuration.js');
 
 
 exports.getReport = function(req, res){

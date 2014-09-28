@@ -1,10 +1,10 @@
 var request = require('request');
-var config = require('../configuration.js');
+var config 	= require('../configuration.js');
 
 module.exports = function (latitude, longitude, boost, success) {
 	var url = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=' + latitude + ',' + longitude + '&radius=' + config.findarea.radius + '&types=' + config.findarea.types + '&sensor=false&key=AIzaSyDQlznNx7-3MAPuiCgBwq93ng_VBmm1WJg';
 		console.log(url);
-		
+
 	//http://stackoverflow.com/questions/3089772/find-nearest-transit-station-stopover-bus-train-etc-in-google-maps
 	// TODO: LOOP WITH INCREASING RADIUS
 		var assert = require('assert');
@@ -27,4 +27,3 @@ module.exports = function (latitude, longitude, boost, success) {
 			success(error, way);
 		});
 };
-

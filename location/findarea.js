@@ -1,6 +1,6 @@
-var config = require('../configuration.js'),
-	yelp = require('../api/yelpinterface.js').createClient(config.yelp.oauth2),
-	request = require('request');
+var config 	= require('../configuration.js'),
+	yelp 			= require('../api/yelpinterface.js').createClient(config.yelp.oauth2),
+	request 	= require('request');
 
 
 exports.area = function (latitude, longitude, callback) {

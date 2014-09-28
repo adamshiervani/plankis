@@ -1,6 +1,6 @@
-var findArea = require('./../location/findarea');
-var async = require('async');
-var TicketPatterns = require('./../schemas/ticket').ticketsPattern;
+var findArea        = require('./../location/findarea');
+var     async       = require('async');
+var TicketPatterns  = require('./../schemas/ticket').ticketsPattern;
 
 exports.getConfiguration = function (req, res) {
 
@@ -9,12 +9,6 @@ exports.getConfiguration = function (req, res) {
         res.send(400, {error: 'Missing parameter!'});
         return;
     }
-
-
-    // report.save(function (err, save) {
-    //     console.log(save);
-    // });
-
 
     report = new TicketPatterns();
     //Set all the Report variables

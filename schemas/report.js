@@ -1,6 +1,6 @@
 var mongoose = require('mongoose'),
-	Schema = mongoose.Schema,
-	config = require('../configuration.js');
+			Schema = mongoose.Schema,
+			config = require('../configuration.js');
 
 
 var schema = new Schema({

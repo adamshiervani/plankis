@@ -61,7 +61,7 @@ exports.getTicket = function(req, res){
 					//TODO: Does it really have to be in this callback, Can it be further up. Does the function still run when answering on the request
 					res.json(200, {from: validTicket.from, message: validTicket.content});
 					// res.json(200, {});
-				}) ;
+				});
 			});
 		}
 
@@ -125,14 +125,13 @@ exports.validationTickets = function (req, res) {
 					res.json(400, err);
 					return;
 				}
-				result.asasd = 'asd'
-;				res.json(result);
+				result.asasd = 'asd';
+				res.json(result);
 			});
 		});
 };
 
 exports.countValidTickets = function (req, res) {
-
 	timespan = +(Date.now() - config.tickets.expires);
 
 	Ticket.count({ timestamp: { $gt: timespan }}, function (err, c) {

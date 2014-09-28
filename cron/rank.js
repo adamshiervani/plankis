@@ -1,5 +1,7 @@
 var Report = require('../schemas/report.js'),
-	config = require('../configuration.js');
+		config = require('../configuration.js');
+
+
 module.exports = function () {
 	var minutes = 1, interval = minutes * 60 * 1000;
 

@@ -47,6 +47,9 @@ mongoose.model('tickets', ticketSchema);
 exports.tickets = mongoose.model('tickets');
 
 
+
+// Used Tickets
+
 var usedTicketsSchema = new Schema({
 
 	ticketid: {

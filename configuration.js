@@ -7,7 +7,7 @@ module.exports = {
 	},
 	yelp:{
 		oauth2: {
-			consumer_key: "aBvlOelO4pMRt3ujfH5tXw", 
+			consumer_key: "aBvlOelO4pMRt3ujfH5tXw",
 			consumer_secret: "ZdnufhFVyu6iibxmfmw1kX8kw60",
 			token: "XEq1cOVR8poToi8wQRu5zYXr7usyTfM6",
 			token_secret: "3d7qf5Cr23TcRS3C3kQFvj6Iabc"
@@ -18,7 +18,7 @@ module.exports = {
 	},
 	tickets: {
 		expires: 5400000 - 300000,
-		//5 400 000 ms = 1.5 Hours 
+		//5 400 000 ms = 1.5 Hours
 		//300000 ms = 5 min
 		//This is to have some margin between getting the ticket and actually using it.
 	},
