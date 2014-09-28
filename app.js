@@ -15,7 +15,7 @@ var express = require('express'),
 /**
  *	Mongo Configuration
  */
-mongoose.connect('localhost', 'plankdb');
+mongoose.connect('http://127.0.0.1', 'plankdb');
 
 var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'Connection error:'));
