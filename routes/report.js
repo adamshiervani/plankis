@@ -11,7 +11,7 @@ exports.getReport = function(req, res){
 		return;
 	}
 
-	Report.find({ timestamp: { $gt: +(Date.now() - config.confirm.time.timediff)}, city: req.param('city')}, {area: 1, timestamp: 1, station: 1, rank: 1, '_id': 1}).sort({timestamp: -1}).exec(function(err, report) {
+	Report.find({ timestamp: { $gt: +(Date.now() - config.confirm.time.timediff)}, city: req.param('city').toLowerCase()}, {area: 1, timestamp: 1, station: 1, rank: 1, '_id': 1}).sort({timestamp: -1}).exec(function(err, report) {
 		if (err) {
 			res.json(204, {error: err});
 			return;
