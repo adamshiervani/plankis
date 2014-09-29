@@ -47,7 +47,7 @@ exports.addReport = function (req, res) {
 		for (var i = 0; i < report.length; i++) {
 
 			//Find the distance between the newly report and the previous ones(within the timframe)
-			var distance = utils.distance(lat_origin , sketc, report[i].latitude, report[i].longitude, config.confirm.unit);
+			var distance = utils.distance(lat_origin , long_origin, report[i].latitude, report[i].longitude, config.confirm.unit);
 
 			console.log('Distance: ' +  distance + ' KM');
 
